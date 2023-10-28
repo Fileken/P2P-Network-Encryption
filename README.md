@@ -7,5 +7,5 @@
 # Участники
 - Суровцев Александр Константинович (https://github.com/Ovoshebaza123)
 - Баранов Евгений Сергеевич (https://github.com/karasik227)
--
+- Дорофеев Дамир Олегович (https://github.com/nesya7)
 -
