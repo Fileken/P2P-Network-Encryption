@@ -8,24 +8,27 @@ def caesar_cipher(text, shift):
             result += char
     return result
 
-def encrypt_message(message, encryption_function, *args):
-    """
-    Функция для шифрования сообщения с использованием заданной функции шифрования.
+def vinzher_cipher(text, key, mode):
+    result = ""
+    text=text.upper()
+    key=key.upper()
+    mode=mode.upper()
+    key *= len(text) // len(key) + 1
+    for index, symbol in enumerate(text):
+        if mode == 'e':
+            temp = ord(symbol) + ord(key[index])
+        else:
+            temp = ord(symbol) - ord(key[index])
+        result += chr(temp % 26 + ord('A'))
+    return result
 
-    :param message:                   Исходное сообщение, которое нужно зашифровать.
-    :param encryption_function: Функция шифрования, которая будет применена к сообщению.
-    :param *args:                         Дополнительные аргументы, передаваемые в функцию шифрования (например, ключи).
-    :return:                                  Зашифрованное сообщение.
-    """
+
+
+def encrypt_message(message, encryption_function, *args):
     return encryption_function(message, *args)
 
 def decrypt_message(encrypted_message, decryption_function, *args):
-    """
-    Функция для расшифровки сообщения с использованием заданной функции расшифрования.
-
-    :param encrypted_message: Зашифрованное сообщение, которое нужно расшифровать.
-    :param decryption_function: Функция расшифрования, которая будет применена к сообщению.
-    :param *args:                         Дополнительные аргументы, передаваемые в функцию расшифрования (например, ключи).
-    :return:                                  Расшифрованное сообщение.
-    """
+    if decryption_function==caesar_cipher:
+        args=list(args)
+        args[0]=-args[0]
     return decryption_function(encrypted_message, *args)
