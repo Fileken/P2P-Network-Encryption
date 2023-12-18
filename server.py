@@ -1,25 +1,56 @@
+# server.py
+
 import socket
-import encryption  # Импортируем модуль для шифрования и дешифрования сообщений
+import threading
+import signal
+import sys
 
-# Создаем сокет сервера
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(('127.0.0.1', 12345))
-server.listen(1)
+clients = {}
 
-print("Сервер слушает на порту 12345")
+def handle_client(client_socket, addr):
+    username = client_socket.recv(1024).decode('utf-8')
+    clients[addr] = (client_socket, username)
+    print(f"New connection from {addr} with username '{username}'. Total clients: {len(clients)}")
 
-# Принимаем подключение клиента
-client, client_addr = server.accept()
-print(f"Подключение от {client_addr}")
+    try:
+        while True:
+            message = client_socket.recv(1024).decode('utf-8')
+            if not message:
+                break
+            broadcast(f"{username}: {message}")
+    except Exception as e:
+        print(f"Error handling client {addr}: {e}")
+    finally:
+        del clients[addr]
+        client_socket.close()
+        print(f"Connection from {addr} with username '{username}' closed. Total clients: {len(clients)}")
 
-while True:
-    data = client.recv(1024)
-    if not data:
-        break
+def broadcast(message):
+    for client_socket, _ in clients.values():
+        try:
+            client_socket.sendall(message.encode('utf-8'))
+        except:
+            pass  # Handle any exceptions that might occur when sending to a client
 
-    # Расшифровываем полученное сообщение с использованием шифра Цезаря
-    decrypted_data = encryption.decrypt_message(data.decode(), encryption.caesar_cipher, shift=-3)  # Используем сдвиг -3 как пример
-    print(f"Получено сообщение: {decrypted_data}")
+def signal_handler(sig, frame):
+    print("Shutting down server...")
+    for client_socket, _ in clients.values():
+        client_socket.close()
+    sys.exit(0)
 
-client.close()
-server.close()
+def main():
+    signal.signal(signal.SIGINT, signal_handler)
+
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(('127.0.0.0', 8888))
+    server.listen()
+
+    print("Server listening on port 8888")
+
+    while True:
+        client_socket, addr = server.accept()
+        client_handler = threading.Thread(target=handle_client, args=(client_socket, addr))
+        client_handler.start()
+
+if __name__ == '__main__':
+    main()
