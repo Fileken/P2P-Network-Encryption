@@ -14,6 +14,49 @@ def caesar_cipher(text, shift):
             result += char
     return result
 
+def custom_cipher(text, mode):
+    result = ""
+    for char in text:
+        if mode == "E":
+            if char.isalpha():
+                shift_amount = 65 if char.isupper() else 97
+                shift=random.randint(0,25)
+                for char in text:
+                    result += chr((ord(char) - shift_amount + shift) % 26 + shift_amount)
+        else:
+            if char.isalpha():
+                shift=int(input("Write the shift: "))
+                shift_amount = 65 if char.isupper() else 97
+                for char in text:
+                    result += chr((ord(char) - shift_amount - shift) % 26 + shift_amount)
+        return result, shift
+
+def az_cipher(text, mode):
+    result = ""
+    alpha=tuple("abcdefghijklmnopqrstuvwxyz")
+    if mode == "E":
+        for char in text:
+            result += "%hu "%(alpha.index(char)+1)
+    else:
+        for number in regular(text):
+            result += "%c"%alpha[int(number)-1]
+    return result
+
+def replace_cipher(text, mode):
+    result=""
+    text.upper()
+    symbolsAlpha = [chr(x) for x in range(65,91)]
+    symbolsCrypt = ('!','@','#','$','%','^','&','*','(',')','-','=','+','?',':',';','<','>','/','[',']','{','}','|','.',',','~')
+    keys = dict(zip(symbolsAlpha,symbolsCrypt))
+    if mode == "E":
+        for char in text:
+            if char in keys: result += keys[char]
+    else:
+        for char in text:
+            for key in keys:
+                if char == keys[key]: result+=key
+    return result
+
 def vinzher_cipher(text, key, mode):
     result = ""
     text=text.upper()
@@ -48,21 +91,52 @@ def encrypt_message(message, encryption_function, *args):
     if encryption_function==vinzher_cipher:
         args=list(args)
         args.append("E")
+
+    if encryption_function==custom_cipher:
+        args=list(args)
+        args.append("E")
+        
     if encryption_function==xor_cipher:
         args=list(args)
         args.append("E")
         
+    if encryption_function==az_cipher:
+        args=list(args)
+        args.append("E")
+        
+    if encryption_function==replace_cipher:
+        args=list(args)
+        args.append("E") 
+    
+        
     return encryption_function(message, *args)
+    
 
 def decrypt_message(encrypted_message, decryption_function, *args):
     
     if decryption_function==caesar_cipher:
         args=list(args)
         args[0]=-args[0]
+        
+    if decryption_function==custom_cipher:
+        args=list(args)
+        args.append("D")
+        
     if decryption_function==vinzher_cipher:
         args=list(args)
         args.append("D")
+        
     if decryption_function==xor_cipher:
         args=list(args)
         args.append("D")
+        
+    if decryption_function==az_cipher:
+        args=list(args)
+        args.append("D")
+        
+    if decryption_function==replace_cipher:
+        args=list(args)
+        args.append("D")
+        
+        
     return decryption_function(encrypted_message, *args)
