@@ -69,8 +69,8 @@ def replace_cipher(text, mode):
                 if char == keys[key]: result+=key
     return result
 
-# Function for Vigenère cipher encryption or decryption
-def vinzhener_cipher(text, key, mode):
+# Function for Vigenere cipher encryption or decryption
+def vinzher_cipher(text, key, mode):
     result = ""
     text=text.upper()
     key=key.upper()
@@ -108,7 +108,7 @@ def xor_cipher(text, mode):
 def encrypt_message(message, encryption_function, *args):
     # Adjusting arguments based on the encryption function
     
-    if encryption_function==vinzhener_cipher:
+    if encryption_function==vinzher_cipher:
         args=list(args)
         args.append("E")
 
@@ -143,7 +143,7 @@ def decrypt_message(encrypted_message, decryption_function, *args):
         args=list(args)
         args.append("D")
         
-    if decryption_function==vinzhener_cipher:
+    if decryption_function==vinzher_cipher:
         args=list(args)
         args.append("D")
         
